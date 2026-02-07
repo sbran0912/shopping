@@ -1,0 +1,152 @@
+### REST Client Test File (VSCode Extension: REST Client)
+@baseUrl = http://localhost:8080
+
+### ========================================
+### ARTIKEL
+### ========================================
+
+### Alle Artikel abrufen
+GET {{baseUrl}}/artikel
+
+### Einzelnen Artikel abrufen
+GET {{baseUrl}}/artikel/1
+
+### Neuen Artikel erstellen
+POST {{baseUrl}}/artikel
+Content-Type: application/json
+
+{
+  "name": "Schokolade"
+}
+
+### Artikel löschen
+DELETE {{baseUrl}}/artikel/21
+
+
+### ========================================
+### EINKAUFSLISTEN
+### ========================================
+
+### Alle Listen abrufen
+GET {{baseUrl}}/listen
+
+### Einzelne Liste abrufen
+GET {{baseUrl}}/listen/1
+
+### Neue Liste erstellen
+POST {{baseUrl}}/listen
+Content-Type: application/json
+
+{
+  "bezeichnung": "Montagseinkauf"
+}
+
+### Liste löschen
+DELETE {{baseUrl}}/listen/2
+
+
+### ========================================
+### EINKAUFSPOSITIONEN
+### ========================================
+
+### Alle Positionen einer Liste abrufen
+GET {{baseUrl}}/listen/1/positionen
+
+### Einzelne Position abrufen
+GET {{baseUrl}}/positionen/1
+
+### Neue Position erstellen
+POST {{baseUrl}}/listen/1/positionen
+Content-Type: application/json
+
+{
+  "artikel_name": "Käse",
+  "bemerkung": "Gouda, mittelalt"
+}
+
+### Position als erledigt markieren
+PATCH {{baseUrl}}/positionen/1
+Content-Type: application/json
+
+{
+  "erledigt": true
+}
+
+### Position als unerledigt markieren
+PATCH {{baseUrl}}/positionen/1
+Content-Type: application/json
+
+{
+  "erledigt": false
+}
+
+### Bemerkung ändern
+PATCH {{baseUrl}}/positionen/2
+Content-Type: application/json
+
+{
+  "bemerkung": "12er Packung statt 10er"
+}
+
+### Artikel-Name und Bemerkung ändern
+PATCH {{baseUrl}}/positionen/3
+Content-Type: application/json
+
+{
+  "artikel_name": "Vollmilch",
+  "bemerkung": "3.8% Fett, 2 Liter"
+}
+
+### Position löschen
+DELETE {{baseUrl}}/positionen/5
+
+
+### ========================================
+### WORKFLOW-BEISPIEL
+### ========================================
+
+### 1. Neue Liste erstellen
+POST {{baseUrl}}/listen
+Content-Type: application/json
+
+{
+  "bezeichnung": "Grillparty Samstag"
+}
+
+### 2. Positionen hinzufügen (liste_id aus vorherigem Response verwenden)
+POST {{baseUrl}}/listen/2/positionen
+Content-Type: application/json
+
+{
+  "artikel_name": "Würstchen",
+  "bemerkung": "2 Packungen á 10 Stück"
+}
+
+###
+POST {{baseUrl}}/listen/2/positionen
+Content-Type: application/json
+
+{
+  "artikel_name": "Grillkohle",
+  "bemerkung": "1 großer Sack"
+}
+
+###
+POST {{baseUrl}}/listen/2/positionen
+Content-Type: application/json
+
+{
+  "artikel_name": "Senf",
+  "bemerkung": "mittelscharf"
+}
+
+### 3. Positionen der neuen Liste abrufen
+GET {{baseUrl}}/listen/2/positionen
+
+### 4. Erste Position als erledigt markieren
+PATCH {{baseUrl}}/positionen/6
+Content-Type: application/json
+
+{
+  "erledigt": true
+}
