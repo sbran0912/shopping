@@ -16,7 +16,7 @@ export class AddPositionForm {
     const row = el('div', { className: 'row g-2' });
 
     // Artikel Input Group
-    const colArtikel = el('div', { className: 'col-md-6 position-relative' });
+    const colArtikel = el('div', { className: 'col-md-5 position-relative' });
     this.artikelInput = el('input', {
       type: 'text',
       className: 'form-control',
@@ -42,7 +42,7 @@ export class AddPositionForm {
     row.appendChild(colArtikel);
 
     // Bemerkung Input
-    const colBemerkung = el('div', { className: 'col-md-4' });
+    const colBemerkung = el('div', { className: 'col-md-5' });
     this.bemerkungInput = el('input', {
       type: 'text',
       className: 'form-control',
