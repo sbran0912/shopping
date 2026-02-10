@@ -172,7 +172,7 @@ export class App {
   }
 
   private renderSidebar() {
-    const sidebar = el('div', { className: 'col-md-4 col-lg-3 bg-light p-0 sidebar-wrapper' });
+    const sidebar = el('div', { className: 'col-md-6 col-lg-3 bg-light p-0 sidebar-wrapper' });
 
     const sidebarHeader = el('div', { className: 'd-flex justify-content-between align-items-center p-3 border-bottom bg-white' },
       el('h5', { className: 'm-0' }, 'Meine Listen'),
@@ -212,7 +212,7 @@ export class App {
   }
 
   private renderMainContent() {
-    const main = el('div', { className: 'col-md-8 col-lg-9 p-3 p-md-4' });
+    const main = el('div', { className: 'col-md-6 col-lg-9 p-3 p-md-4' });
 
     if (!this.selectedListe) {
       main.appendChild(
@@ -239,22 +239,16 @@ export class App {
     if (this.positionen.length > 0) {
       const stats = this.getStats();
       const statsEl = el('div', { className: 'row g-3 mb-4' },
-        el('div', { className: 'col-4 text-center' },
+        el('div', { className: 'col-6 text-center' },
           el('div', { className: 'p-3 bg-white rounded shadow-sm border' },
             el('div', { className: 'h4 mb-0 fw-bold text-primary' }, stats.total.toString()),
             el('div', { className: 'small text-muted' }, 'Gesamt')
           )
         ),
-        el('div', { className: 'col-4 text-center' },
+        el('div', { className: 'col-6 text-center' },
           el('div', { className: 'p-3 bg-white rounded shadow-sm border' },
             el('div', { className: 'h4 mb-0 fw-bold text-danger' }, stats.open.toString()),
             el('div', { className: 'small text-muted' }, 'Offen')
-          )
-        ),
-        el('div', { className: 'col-4 text-center' },
-          el('div', { className: 'p-3 bg-white rounded shadow-sm border' },
-            el('div', { className: 'h4 mb-0 fw-bold text-success' }, stats.done.toString()),
-            el('div', { className: 'small text-muted' }, 'Erledigt')
           )
         )
       );
