@@ -16,6 +16,7 @@ export class App {
   private artikel: Artikel[] = [];
   private error: string | null = null;
   private loading = false;
+  private pendingSyncCount = 0;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -23,6 +24,23 @@ export class App {
   }
 
   private async init() {
+    // Listen for online/offline changes
+    window.addEventListener('online', () => {
+      this.render();
+      // Reload fresh data after coming back online
+      this.loadData();
+    });
+    window.addEventListener('offline', () => this.render());
+
+    // Listen for sync queue changes
+    api.onSyncChange((count) => {
+      this.pendingSyncCount = count;
+      this.render();
+    });
+
+    // Check initial pending count
+    this.pendingSyncCount = await api.getPendingCount();
+
     await this.loadData();
     this.render();
   }
@@ -171,6 +189,39 @@ export class App {
     );
   }
 
+  private renderOfflineBanner() {
+    const elements: HTMLElement[] = [];
+
+    if (!api.isOnline) {
+      elements.push(
+        el('div', { className: 'alert alert-warning m-3 mb-0 shadow-sm d-flex align-items-center' },
+          el('span', { className: 'me-2 fs-5' }, '\u{1F4F4}'),
+          el('div', {},
+            el('strong', {}, 'Offline-Modus'),
+            el('div', { className: 'small' }, 'Änderungen werden gespeichert und synchronisiert, sobald du wieder online bist.')
+          )
+        )
+      );
+    }
+
+    if (this.pendingSyncCount > 0) {
+      const text = this.pendingSyncCount === 1
+        ? '1 ausstehende Änderung'
+        : `${this.pendingSyncCount} ausstehende Änderungen`;
+      elements.push(
+        el('div', { className: 'alert alert-info m-3 mb-0 shadow-sm d-flex align-items-center' },
+          el('span', { className: 'me-2 fs-5' }, '\u{1F504}'),
+          el('div', {},
+            el('strong', {}, text),
+            el('div', { className: 'small' }, api.isOnline ? 'Wird synchronisiert...' : 'Wird synchronisiert, sobald du online bist.')
+          )
+        )
+      );
+    }
+
+    return elements;
+  }
+
   private renderSidebar() {
     const sidebar = el('div', { className: 'col-md-6 col-lg-3 bg-light p-0 sidebar-wrapper' });
 
@@ -197,7 +248,7 @@ export class App {
       );
     } else {
       const listsContainer = el('div', { className: 'list-group list-group-flush' });
-      this.listen.forEach(liste => {
+      [...this.listen].sort((a, b) => a.bezeichnung.localeCompare(b.bezeichnung, 'de')).forEach(liste => {
         const card = new ListCard(
           liste,
           this.selectedListe?.id === liste.id,
@@ -304,6 +355,10 @@ export class App {
     const errorBanner = this.renderErrorBanner();
     if (errorBanner) {
       this.container.appendChild(errorBanner);
+    }
+
+    for (const banner of this.renderOfflineBanner()) {
+      this.container.appendChild(banner);
     }
 
     const containerDiv = el('div', { className: 'container-lg' });
