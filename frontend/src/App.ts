@@ -42,6 +42,13 @@ export class App {
     this.pendingSyncCount = await api.getPendingCount();
 
     await this.loadData();
+
+    // Sync any pending changes that may remain from a previous session
+    if (this.pendingSyncCount > 0 && api.isOnline) {
+      await api.syncPendingChanges();
+      this.pendingSyncCount = await api.getPendingCount();
+    }
+
     this.render();
   }
 
