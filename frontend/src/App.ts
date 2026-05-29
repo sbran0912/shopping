@@ -26,16 +26,23 @@ export class App {
   private async init() {
     // Listen for online/offline changes
     window.addEventListener('online', () => {
+      // api.ts syncPendingChanges handler triggert den Sync automatisch
+      // Der Sync-Callback (onSyncChange) löst dann bei Erfolg loadData() aus
       this.render();
-      // Reload fresh data after coming back online
-      this.loadData();
     });
     window.addEventListener('offline', () => this.render());
 
-    // Listen for sync queue changes
-    api.onSyncChange((count) => {
+    // Listen for sync queue changes (wird nach syncPendingChanges() aufgerufen)
+    api.onSyncChange(async (count) => {
+      const wasPending = this.pendingSyncCount > 0;
       this.pendingSyncCount = count;
       this.render();
+
+      // Wenn die Sync-Queue gerade geleert wurde (alle Änderungen synchronisiert),
+      // dann frische Daten vom Server laden
+      if (wasPending && count === 0) {
+        await this.loadData();
+      }
     });
 
     // Check initial pending count
@@ -45,8 +52,11 @@ export class App {
 
     // Sync any pending changes that may remain from a previous session
     if (this.pendingSyncCount > 0 && api.isOnline) {
-      await api.syncPendingChanges();
-      this.pendingSyncCount = await api.getPendingCount();
+      const result = await api.syncPendingChanges();
+      // Bei erfolgreichem Sync frische Daten laden
+      if (result.success > 0) {
+        await this.loadData();
+      }
     }
 
     this.render();

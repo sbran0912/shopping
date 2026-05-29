@@ -61,11 +61,10 @@ class ApiService {
     return queue.length;
   }
 
-  async syncPendingChanges(): Promise<void> {
-    const { success } = await processSyncQueue(this.baseUrl);
-    if (success > 0) {
-      await this.notifySyncListeners();
-    }
+  async syncPendingChanges(): Promise<{ success: number; failed: number }> {
+    const result = await processSyncQueue(this.baseUrl);
+    await this.notifySyncListeners();
+    return result;
   }
 
   // --- Artikel ---
