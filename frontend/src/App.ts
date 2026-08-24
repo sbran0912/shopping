@@ -167,13 +167,6 @@ export class App {
     }
   }
 
-  private getStats() {
-    const total = this.positionen.length;
-    const done = this.positionen.filter(p => p.erledigt).length;
-    const open = total - done;
-    return { total, done, open };
-  }
-
   private renderHeader() {
     const header = el('div', { className: 'container py-4 text-center' });
     header.style.animation = 'slideDown 0.8s ease-out';
@@ -302,26 +295,6 @@ export class App {
       }, '🗑️ Liste löschen')
     );
     main.appendChild(contentHeader);
-
-    // Stats
-    if (this.positionen.length > 0) {
-      const stats = this.getStats();
-      const statsEl = el('div', { className: 'row g-3 mb-4' },
-        el('div', { className: 'col-6 text-center' },
-          el('div', { className: 'p-3 bg-white rounded shadow-sm border' },
-            el('div', { className: 'h4 mb-0 fw-bold text-primary' }, stats.total.toString()),
-            el('div', { className: 'small text-muted' }, 'Gesamt')
-          )
-        ),
-        el('div', { className: 'col-6 text-center' },
-          el('div', { className: 'p-3 bg-white rounded shadow-sm border' },
-            el('div', { className: 'h4 mb-0 fw-bold text-danger' }, stats.open.toString()),
-            el('div', { className: 'small text-muted' }, 'Offen')
-          )
-        )
-      );
-      main.appendChild(statsEl);
-    }
 
     // Add Form
     const addForm = new AddPositionForm(
